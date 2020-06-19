@@ -54,7 +54,7 @@ app.post('/api/photo',function(req,res){
           console.log(err)
         }
       });
-    },5000)
+    },2000)
     
 });
 const port = process.env.PORT || 1337;
