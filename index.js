@@ -57,7 +57,7 @@ app.post('/api/photo',function(req,res){
     },5000)
     
 });
-
-app.listen(3000,function(){
-    console.log("Working on port 3000");
+const port = process.env.PORT || 1337;
+app.listen(port,function(){
+    console.log(`Working on port ${port}`);
 });
