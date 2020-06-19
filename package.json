@@ -1,0 +1,21 @@
+{
+  "name": "file-upload",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "redoc-bundle": "redoc-cli bundle ./YAML/data.yaml --output ./HTML/data.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "multer": "^1.4.1",
+    "npm": "^6.14.5",
+    "pm2": "^4.4.0"
+  },
+  "devDependencies": {
+    "redoc-cli": "^0.9.8"
+  }
+}
