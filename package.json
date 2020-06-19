@@ -6,7 +6,7 @@
   "scripts": {
     "start":"node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "redoc-bundle": "redoc-cli bundle ./YAML/data.yaml --output ./HTML/data.html"
+    "redoc-bundle": "redoc-cli bundle ./data.yaml --output ./data.html"
   },
   "author": "",
   "license": "ISC",

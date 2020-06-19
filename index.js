@@ -8,9 +8,9 @@ const {exec} = require('child_process');
 deletExistingFile();
 function deletExistingFile(){
   try{
-    var filePath = 'HTML/data.html'; 
+    var filePath = 'data.html'; 
     fs.unlinkSync(filePath,);
-    filePath='YAML/data.yaml';
+    filePath='data.yaml';
     fs.unlinkSync(filePath);
   }
   catch(err){
@@ -22,7 +22,7 @@ function deletExistingFile(){
 
 var storage =   multer.diskStorage({
   destination: function (req, file, callback) {
-    callback(null, './YAML');
+    callback(null, '.');
   },
   filename: function (req, file, callback) {
     callback(null, 'data'+path.extname(file.originalname));
@@ -47,7 +47,7 @@ app.post('/api/photo',function(req,res){
       console.log(err);
     })
     setTimeout(function(){
-      const file = 'HTML/data.html';
+      const file = 'data.html';
       console.log(file)
       res.download(file,function(err){
         if(err){
