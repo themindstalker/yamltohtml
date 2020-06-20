@@ -57,7 +57,7 @@ app.post('/api/photo',function(req,res){
     },2000)
     
 });
-const port = process.env.PORT || 1337;
+const port = process.env.PORT || 8080;
 app.listen(port,function(){
     console.log(`Working on port ${port}`);
 });

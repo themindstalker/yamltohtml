@@ -3,6 +3,6 @@
         "node_modules{,/**}",
         ".vscode{,/**}"
     ],
-    "appService.defaultWebAppToDeploy": "/subscriptions/bb97873f-0f10-42dd-9e5f-ccc488a41bbf/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/yamltohtml",
-    "appService.deploySubpath": "."
+    "appService.deploySubpath": ".",
+    "appService.defaultWebAppToDeploy": "/subscriptions/bb97873f-0f10-42dd-9e5f-ccc488a41bbf/resourceGroups/yamltohtml/providers/Microsoft.Web/sites/yamltohtml"
 }
