@@ -1,34 +1,82 @@
 openapi: "3.0.0"
 info:
   version: 0.0.1
-  title: Asset Blocking Open API
-  description: Endpoints for handling the asset blocking
+  title: Open Order Cancellation Open API
+  description: Endpoints for handling the open order cancellations
 paths:
-  /openapi/bos/v1/assetblockings:
+  /openapi/bos/v1/openordercancellations:
     post:
-      summary: Places a request to block assets
+      summary: Places an open order cancellation request
       requestBody:
         required: true
         content:
           application/json:
             schema:
-             $ref: '#/components/schemas/AssetBlockingCreateRequest'
+             $ref: '#/components/schemas/OpenOrderCreationRequest'
                 
       responses:
         '201':
-          description: Successfully placed Asset Blocking request.
+          description: Successfully placed open order cancellation request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  BlockingId:
-                    type: string
+                $ref: '#/components/schemas/OpenOrderCancellationResponse'
         '400':
           description: When model validation fails
         '500':
           description: Internal server error occurred
           
+      x-application-visibility: saxo-only
+      x-network-visibility: internal
+      x-required-permissions: personal-write 
+      
+  /openapi/bos/v1/openordercancellations/{OpenOrderCancellationConfigId}:
+    patch:
+      summary: Update Open Order Cancellation
+      operationId: updateOpenOrderCancellation
+      parameters: 
+        - name: OpenOrderCancellationConfigId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: OpenOrderUpdateRequest
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/OpenOrderCreationRequest'
+      responses:
+        '204':
+          description: Successfully updated open order cancellation
+        '400':
+          description: Model validation fails
+        '500':
+          description: Internal server error occurred
+      x-application-visibility: saxo-only
+      x-network-visibility: internal
+      x-required-permissions: personal-write 
+      
+    delete:
+      summary: Update Open Order Cancellation
+      operationId: deleteOpenOrderCancellation
+      parameters: 
+        - name: OpenOrderCancellationConfigId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: OpenOrderDeletionRequest
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/OpenOrderDeletionRequest'
+      responses:
+        '204':
+          description: Successfully updated open order cancellation
+        '400':
+          description: Model validation fails
+        '500':
+          description: Internal server error occurred
       x-application-visibility: saxo-only
       x-network-visibility: internal
       x-required-permissions: personal-write 
@@ -470,5 +518,101 @@ components:
         RowNo:
           type: integer
           
+    OpenOrderCreationRequest:
+      type: object
+      required: 
+        - DateTypeId
+        - OrderDeletionTypeId
+        - PriceSeed
+        - User
+        - CorporateActionTypeId
+        - EventTypeId
+      properties:
+        DateTypeId:
+          type: integer
+          description: "This indicates open order cancel trigger date i.e. when the placed request will get triggered.Few examples of date types are 1 for Ex-date, 2 for Record Date, 3 for PayDate, and 4 for ClientDeadlineDate. For more date types refer to lookups end point."
+          example: 1
+        OrderDeletionTypeId:
+          type: integer
+          description: "This indicates order deletion type. Few examples are 1 for Never delete orders, 2 for Delete if change is more than 20%, and 3 for Always delete orders. For more order deletion types refer to lookups end point."
+          example: 1
+        PriceSeed:
+          type: number
+          description: "The closing price of a security."
+          example: 12.34
+        User:
+          type: string
+          description: "Initials of the user who raised the request."
+          example: "KIRM"
+        CorporateActionTypeId:
+          type: integer
+          description: "Types of action initiated by corporate such as: 10 for Cash Dividend, 11 for Dividend Option, and 34 for Interest. For more corporate action types refer to lookups end point."
+          example: 11
+        EventTypeId:
+          type: integer
+          description: "There are 3 types of events: 1 for Choice, 2 for Mandatory and 3 for Voluntary. For more information refer to lookups end point."
+          example: 1
+        InstrumentSubTypeId:
+          type: integer
+          description: "Sub assets type. For more information refer to lookups end point. You should provide product id to fetch this data."
+          
+    OpenOrderUpdateRequest:
+      type: object
+      required: 
+        - DateTypeId
+        - PriceSeed
+        - User
+        - InstrumentSubTypeId
+      properties:
+        DateTypeId:
+          type: integer
+          description: "This indicates open order cancel trigger date i.e. when the placed request will get triggered.Few examples of date types are 1 for Ex-date, 2 for Record Date, 3 for PayDate, and 4 for ClientDeadlineDate. For more date types refer to lookups end point."
+          example: 1
+        PriceSeed:
+          type: number
+          description: "The closing price of a security."
+          example: 12.34
+        User:
+          type: string
+          description: "Initials of the user who raised the request."
+          example: "KIRM"
+        InstrumentSubTypeId:
+          type: integer
+          description: "Sub assets type. For more information refer to lookups end point. You should provide product id to fetch this data."
         
-            
+    OpenOrderDeletionRequest:
+      type: object
+      required: 
+        - User
+      properties:
+        User:
+          type: string
+          description: "Initials of the user performing the delete action."
+          example: "KIRM"
+      
+    OpenOrderLookupRequest:
+      type: object
+      required: 
+        - FieldGroup
+      properties:
+        FieldGroup:
+          type: string
+          enum: 
+            - DateTypes
+            - EventTypes
+            - InstrumentSubTypes
+            - OrderDeletionTypes
+            - ProductCodes
+            - CorporateActionTypes
+          description: This field represents the field group the user has requested.
+          example: DateTypes
+        DependentId:
+          type: string
+          description: "This field represents the identity of an existing field group data based on which we want to fetch its subtypes. It's optional. It's required when the requested field group is of InstrumentSubTypes."
+          
+    OpenOrderCancellationResponse:
+      type: object
+      properties:
+        ResultValue:
+          type: string
+          description: "This field contains status message of the user action."
