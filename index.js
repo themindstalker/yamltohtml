@@ -44,9 +44,9 @@ app.post('/api/photo',function(req,res){
          
     });
     exec('npm run redoc-bundle',function(err){
-      console.log(err);
-    })
-    setTimeout(function(){
+      if(err){
+        console.log(err);
+      }
       const file = 'data.html';
       console.log(file)
       res.download(file,function(err){
@@ -54,7 +54,16 @@ app.post('/api/photo',function(req,res){
           console.log(err)
         }
       });
-    },2000)
+    })
+    // setTimeout(function(){
+    //   const file = 'data.html';
+    //   console.log(file)
+    //   res.download(file,function(err){
+    //     if(err){
+    //       console.log(err)
+    //     }
+    //   });
+    // },2000)
     
 });
 const port = process.env.PORT || 8080;

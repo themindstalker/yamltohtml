@@ -32,7 +32,7 @@ paths:
       
   /openapi/bos/v1/openordercancellations/{OpenOrderCancellationConfigId}:
     patch:
-      summary: Update Open Order Cancellation
+      summary: Updates an Open Order Cancellation
       operationId: updateOpenOrderCancellation
       parameters: 
         - name: OpenOrderCancellationConfigId
@@ -40,11 +40,12 @@ paths:
           required: true
           schema:
             type: string
-        - name: OpenOrderUpdateRequest
-          in: query
-          required: true
-          schema:
-            $ref: '#/components/schemas/OpenOrderCreationRequest'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+             $ref: '#/components/schemas/OpenOrderUpdateRequest'
       responses:
         '204':
           description: Successfully updated open order cancellation
@@ -57,7 +58,7 @@ paths:
       x-required-permissions: personal-write 
       
     delete:
-      summary: Update Open Order Cancellation
+      summary: Deletes an Open Order Cancellation
       operationId: deleteOpenOrderCancellation
       parameters: 
         - name: OpenOrderCancellationConfigId
@@ -65,14 +66,16 @@ paths:
           required: true
           schema:
             type: string
-        - name: OpenOrderDeletionRequest
+            description: OpenOrderCancellationConfigId of the entity.
+        - name: User
           in: query
           required: true
           schema:
-            $ref: '#/components/schemas/OpenOrderDeletionRequest'
+            type: string
+            description: Initials of the user performing the delete action.
       responses:
         '204':
-          description: Successfully updated open order cancellation
+          description: Successfully deleted open order cancellation
         '400':
           description: Model validation fails
         '500':
@@ -80,57 +83,31 @@ paths:
       x-application-visibility: saxo-only
       x-network-visibility: internal
       x-required-permissions: personal-write 
-  /openapi/bos/v1/assetblockings/stocktransfers:
+  /openapi/bos/v1/openordercancellations/lookups:
     get:
-      summary: Fetches asset blocking stock data
-      operationId: fetchStocktransfers
+      summary: Fetches Open Order Cancellation Lookup Data
+      description: This end point fetches lookup data based on field group type. This end point is specific to open order cancellation only.
+      operationId: fetchOpenOrderLookups
       parameters: 
-        - name: StockTransferId
+        - name: FieldGroup
           in: query
-          description: The stock transfer id
+          description: This field represents the field group the user has requested.
+          required: true
+          schema:
+            $ref: '#/components/schemas/OpenOrderFieldGroup'
+        - name: DependentId
+          in: query
+          description: "This field represents the identity of an existing field group data based on which we want to fetch its subtypes. It's optional. It's required when the requested field group is of InstrumentSubTypes."
           required: false
           schema:
             type: string
-        - name: Client
-          in: query
-          description: The Client id
-          required: false
-          schema:
-            type: string
-        - name: InstrumentUIC
-          in: query
-          description: The InstrumentUIC
-          required: false
-          schema:
-            type: string
-        - name: SortColumn
-          in: query
-          description: Column name that needs to be considered for filter
-          required: false
-          schema:
-            type: string
-            enum: 
-              - StockTransferId
-              - InstrumentUIC
-              - BlockingAction
-              - Client
-              - BlockedQuantity
-        - name: SortOrder
-          in: query
-          description: The SortOrder
-          required: false
-          schema:
-            type: string
-            enum:
-             - ASC
-             - DESC
       responses:
         '200':
-          description: Successfully fetched blocked data
+          description: Successfully fetched lookups data
           content:
             application/json: 
               schema:
-                $ref: "#/components/schemas/BlockingStockTransfer"
+                $ref: "#/components/schemas/FieldGroupResponse"
         '400':
           description: Model validation fails
         '500':
@@ -138,386 +115,9 @@ paths:
       x-application-visibility: saxo-only
       x-network-visibility: internal
       x-required-permissions: personal-read
-   
-  /openapi/bos/v1/assetblockings/corporateactions:
-    get:
-      summary: Fetches asset blocking stock data
-      operationId: fetchCorporateactions
-      parameters: 
-        - name: CorporateActionId
-          in: query
-          description: The CorporateActionId
-          required: false
-          schema:
-            type: string
-        - name: Client
-          in: query
-          description: The Client id
-          required: false
-          schema:
-            type: string
-        - name: InstrumentUIC
-          in: query
-          description: The InstrumentUIC
-          required: false
-          schema:
-            type: string
-        - name: Exdate
-          in: query
-          description: Exdate
-          required: false
-          schema:
-            type: string
-            format: date-time
-        - name: Paydate
-          in: query
-          description: Paydate
-          required: false
-          schema:
-            type: string
-            format: date-time
-        - name: DeadlineDate
-          in: query
-          description: DeadlineDate
-          required: false
-          schema:
-            type: string
-            format: date-time
-        - name: OwnerID
-          in: query
-          description: OwnerID
-          required: false
-          schema:
-            type: string
-            format: date-time
-        - name: SortColumn
-          in: query
-          description: Column name that needs to be considered for filter
-          required: false
-          schema:
-            type: string
-            enum: 
-              - CorporateActionId
-              - InstrumentUIC
-              - BlockingAction
-              - Client
-              - BlockedQuantity
-              - ExDate
-              - PayDate
-              - DedalineDate
-        - name: SortOrder
-          in: query
-          description: The SortOrder
-          required: false
-          schema:
-            type: string
-            enum:
-             - ASC
-             - DESC
-      responses:
-        '200':
-          description: Corporate Actions data
-          content:
-            application/json: 
-              schema:
-                $ref: "#/components/schemas/BlockingCoac"
-        '400':
-          description: Model validation fails
-        '500':
-          description: Internal server error
-      x-application-visibility: saxo-only
-      x-network-visibility: internal
-      x-required-permissions: personal-read
-   
-  /openapi/bos/v1/assetblockings/corporateaction/download:
-    get:
-      summary: Fetches asset blocking stock data
-      operationId: downloadCorporateActions
-      parameters: 
-        - name: CorporateActionId
-          in: query
-          description: The CorporateActionId
-          required: false
-          schema:
-            type: string
-        - name: Client
-          in: query
-          description: The Client id
-          required: false
-          schema:
-            type: string
-        - name: InstrumentUIC
-          in: query
-          description: The InstrumentUIC
-          required: false
-          schema:
-            type: string
-        - name: Exdate
-          in: query
-          description: Exdate
-          required: false
-          schema:
-            type: string
-            format: date-time
-        - name: Paydate
-          in: query
-          description: Paydate
-          required: false
-          schema:
-            type: string
-            format: date-time
-        - name: DeadlineDate
-          in: query
-          description: DeadlineDate
-          required: false
-          schema:
-            type: string
-            format: date-time
-        - name: OwnerID
-          in: query
-          description: OwnerID
-          required: false
-          schema:
-            type: string
-            format: date-time
-      responses:
-        '200':
-          description: Downloads file
-          content:
-            image/png:
-              schema:
-                type: string
-                format: binary
-                
-            application/octet-stream:
-              schema:
-                type: string
-                format: binary
-          
-        '400':
-          description: Model validation fails
-        '500':
-          description: Internal server error
-      x-application-visibility: saxo-only
-      x-network-visibility: internal
-      x-required-permissions: personal-read 
 
-  /openapi/bos/v1/assetblockings/stocktransfer/download:
-    get:
-      summary: Downloads asset blocking stock data
-      operationId: downloadtocktransfers
-      parameters: 
-        - name: StockTransferId
-          in: query
-          description: The stock transfer id
-          required: false
-          schema:
-            type: string
-        - name: Client
-          in: query
-          description: The Client id
-          required: false
-          schema:
-            type: string
-        - name: InstrumentUIC
-          in: query
-          description: The InstrumentUIC
-          required: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Downloads file
-          content:
-            image/png:
-              schema:
-                type: string
-                format: binary
-                
-            application/octet-stream:
-              schema:
-                type: string
-                format: binary
-        '400':
-          description: Model validation fails
-        '500':
-          description: Internal server error occurred
-      x-application-visibility: saxo-only
-      x-network-visibility: internal
-      x-required-permissions: personal-read 
-      
-  /openapi/bos/v1/assetblockings/{BlockingId}:
-    patch:
-      summary: Update asset blocking
-      operationId: updateAssetBlocking
-      parameters: 
-        - name: BlockingId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: BlockedQuantity
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: Requester
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: Successfully updated asset blocking
-        '400':
-          description: Model validation fails
-        '500':
-          description: Internal server error occurred
-      x-application-visibility: saxo-only
-      x-network-visibility: internal
-      x-required-permissions: personal-write 
 components:
   schemas:
-    AssetBlockingCreateRequest:
-      type: object
-      properties:
-        RequestReferenceId:
-          type: string
-        BlockCodeReferenceID:
-          type: string
-        BlockingAction:
-          type: string
-          maxLength: 1
-        Client:
-          type: string
-        AttainKey:
-          type: string
-        InstrumentUIC:
-          type: string
-        ProductCode:
-          type: string
-        BlockedQuantity:
-          type: string
-        PositionCutOffDate:
-          type: string
-        BlockCode:
-          type: string
-        BlockingIDReference:
-          type: string
-        Requester:
-          type: string
-          
-    BlockingStockTransfer:
-      type: object
-      required:
-        - RowNo
-      properties:
-        StockTransferId:
-          type: string
-        Position:
-          type: string
-        AttainKey:
-          type: string
-        BlockCode:
-          type: string
-        BlockedQuantity:
-          type: number
-        BlockingAction:
-          type: string
-        BlockingId:
-          type: string
-        BlockingIDReference:
-          type: string
-        Client:
-          type: string
-        CounterpartId:
-          type: string
-        InstrumentUIC:
-          type: string
-        OwnerID:
-          type: string
-        PositionCutOffDate:
-          type: string
-          format: date-time
-        ProcessingDate:
-          type: string
-          format: date-time
-        ProcessingStatus:
-          type: string
-        ProductCode:
-          type: string
-        Requester:
-          type: string
-        RequestReferenceId:
-          type: string
-        UnblockedQuantity:
-          type: number
-        TotalRowsCount:
-          type: integer
-        RowNo:
-          type: integer
-          description: row number
-        
-    BlockingCoac:
-      type: object
-      properties:
-        AttainKey:
-          type: string
-        BlockCode:
-          type: string
-        BlockedQuantity:
-          type: number
-        BlockingAction:
-          type: string
-        BlockingId:
-          type: string
-        BlockingIDReference:
-          type: string
-        Client:
-          type: string
-        CounterpartId:
-          type: string
-        InstrumentUIC:
-          type: string
-        OwnerID:
-          type: string
-        PositionCutOffDate:
-          type: string
-          format: date-time
-        ProcessingDate:
-          type: string
-          format: date-time
-        ProcessingStatus:
-          type: string
-        ProductCode:
-          type: string
-        Requester:
-          type: string
-        RequestReferenceId:
-          type: string
-        UnblockedQuantity:
-          type: string
-        CorporateActionId:
-          type: string
-        EntitledPosition:
-          type: number
-        EligiblePosition:
-          type: number
-        ElectedQuantity:
-          type: number
-        LockingReason:
-          type: string
-        ExDate:
-          type: string
-        PayDate:
-          type: string
-        DeadlineDate:
-          type: string
-        TotalRowsCount:
-          type: integer
-        RowNo:
-          type: integer
-          
     OpenOrderCreationRequest:
       type: object
       required: 
@@ -579,21 +179,16 @@ components:
         InstrumentSubTypeId:
           type: integer
           description: "Sub assets type. For more information refer to lookups end point. You should provide product id to fetch this data."
-        
-    OpenOrderDeletionRequest:
+          
+    OpenOrderCancellationResponse:
       type: object
-      required: 
-        - User
       properties:
-        User:
+        ResultValue:
           type: string
-          description: "Initials of the user performing the delete action."
-          example: "KIRM"
-      
-    OpenOrderLookupRequest:
+          description: "This field contains status message of the user action."
+          
+    FieldGroupResponse:
       type: object
-      required: 
-        - FieldGroup
       properties:
         FieldGroup:
           type: string
@@ -604,15 +199,39 @@ components:
             - OrderDeletionTypes
             - ProductCodes
             - CorporateActionTypes
-          description: This field represents the field group the user has requested.
+          description: This represents the field group type the user has requested for.
           example: DateTypes
-        DependentId:
-          type: string
-          description: "This field represents the identity of an existing field group data based on which we want to fetch its subtypes. It's optional. It's required when the requested field group is of InstrumentSubTypes."
+        Values:
+          type: array
+          items: {
+            type: object,
+            properties: {
+              Id: {
+                type: integer,
+                description: This represents identity of the lookup requested for.
+              },
+              IsoCode: {
+                type: string,
+                description: This represents ISO code. This field will be available when the requested field group is Corporate action types.
+                
+              },
+              Description: {
+                type: string,
+                description: This represents description of the lookup requested for.
+              }
+            }
+              
+          }
           
-    OpenOrderCancellationResponse:
-      type: object
-      properties:
-        ResultValue:
-          type: string
-          description: "This field contains status message of the user action."
+    OpenOrderFieldGroup:
+      type: string
+      enum: 
+        - DateTypes
+        - EventTypes
+        - InstrumentSubTypes
+        - OrderDeletionTypes
+        - ProductCodes
+        - CorporateActionTypes 
+            
+          
+        
